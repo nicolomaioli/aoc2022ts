@@ -1,9 +1,8 @@
-import { z } from 'zod';
-import fs from 'fs';
+import { z } from "https://deno.land/x/zod@v3.19.1/mod.ts";
 
-const input = fs.readFileSync('./data/dayTwo.txt', 'utf8');
+const input = await Deno.readTextFile("./data/dayTwo.txt");
 
-const schema = z.enum(['A', 'B', 'C', 'X', 'Y', 'Z']);
+const schema = z.enum(["A", "B", "C", "X", "Y", "Z"]);
 type schema = z.infer<typeof schema>;
 
 const enum Choice {
@@ -19,14 +18,9 @@ const enum Points {
 }
 
 const strToChoice = (s: schema) => {
-  switch (s) {
-    case 'A' || 'X':
-      return Choice.Rock;
-    case 'B' || 'Y':
-      return Choice.Paper;
-    default:
-      return Choice.Scissors;
-  }
+  if (s === "A" || s === "X") return Choice.Rock;
+  if (s === "B" || s === "Y") return Choice.Paper;
+  return Choice.Scissors;
 };
 
 const game = (p: Choice, t: Choice): Points => {
@@ -40,19 +34,21 @@ const game = (p: Choice, t: Choice): Points => {
 };
 
 export const partOne = (input: string) => {
-  if (input.length === 0) throw new Error('WTF');
+  const roundTotals = input.trimEnd()
+    .split("\n")
+    .map((round) => {
+      const [p, t] = round.split(" ").map((o) => {
+        const v = schema.parse(o);
+        return strToChoice(v);
+      });
 
-  const roundTotals = input.split('\n').map((round) => {
-    const [p, t] = round.split(' ').map((o) => {
-      const v = schema.parse(o);
-      return strToChoice(v);
+      if (p === undefined || t === undefined) {
+        throw new Error("Something went wrong");
+      }
+
+      const res = game(p, t);
+      return res + t;
     });
-
-    if (p === undefined || t === undefined) throw new Error('Wut');
-
-    const res = game(p, t);
-    return res + t;
-  });
 
   return roundTotals.reduce((a, b) => a + b, 0);
 };
@@ -61,5 +57,5 @@ export const partTwo = (input: string) => {
   return 0;
 };
 
-console.log('part one', partOne(input));
-console.log('part two', partTwo(input));
+console.log("part one", partOne(input));
+// console.log("part two", partTwo(input));

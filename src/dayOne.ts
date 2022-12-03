@@ -1,13 +1,11 @@
-import fs from 'fs';
-
-const input = fs.readFileSync('./data/dayOne.txt', 'utf8');
+const input = await Deno.readTextFile("./data/dayOne.txt");
 
 const sortElves = (input: string) => {
   return input
-    .split('\n\n')
+    .split("\n\n")
     .map((arr) => {
       return arr
-        .split('\n')
+        .split("\n")
         .map((el) => Number(el))
         .reduce((a, b) => a + b, 0);
     })
@@ -24,5 +22,5 @@ export const partTwo = (input: string) => {
     .reduce((a, b) => a + b, 0);
 };
 
-console.log('part one', partOne(input));
-console.log('part two', partTwo(input));
+console.log("part one", partOne(input));
+console.log("part two", partTwo(input));

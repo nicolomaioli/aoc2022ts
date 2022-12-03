@@ -1,15 +1,11 @@
-import { partOne, partTwo } from './dayTwo';
+import { partOne, partTwo } from "./dayTwo.ts";
+import { assertEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
 
-describe('day two', () => {
-  test('day two part one', () => {
-    const res = partOne('A Y');
-    expect(res).toBe(15);
-  });
+const input = `A Y
+B X
+C Z`;
 
-  test('day two part two', () => {
-    // const res = partTwo(testInput);
-    // expect(res).toBe(0);
-  });
+Deno.test("day two part one", () => {
+  const res = partOne(input);
+  assertEquals(res, 15);
 });
-
-export {};
