@@ -9,3 +9,8 @@ Deno.test("day two part one", () => {
   const res = partOne(input);
   assertEquals(res, 15);
 });
+
+Deno.test("day two part two", () => {
+  const res = partTwo(input);
+  assertEquals(res, 12);
+});

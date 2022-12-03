@@ -2,8 +2,17 @@ import { z } from "https://deno.land/x/zod@v3.19.1/mod.ts";
 
 const input = await Deno.readTextFile("./data/dayTwo.txt");
 
-const schema = z.enum(["A", "B", "C", "X", "Y", "Z"]);
-type schema = z.infer<typeof schema>;
+const choices = ["A", "B", "C"] as const;
+const outcomes = ["X", "Y", "Z"] as const;
+
+const inputSchema = z.enum([...choices, ...outcomes]);
+type inputSchema = z.infer<typeof inputSchema>;
+
+const choicesSchema = z.enum(choices);
+type choicesSchema = z.infer<typeof choicesSchema>;
+
+const outcomesSchema = z.enum(outcomes);
+type outcomesSchema = z.infer<typeof outcomesSchema>;
 
 const enum Choice {
   Rock = 1,
@@ -11,42 +20,70 @@ const enum Choice {
   Scissors,
 }
 
-const enum Points {
-  Lost = 0,
+const enum Outcome {
+  Lose = 0,
   Draw = 3,
-  Won = 6,
+  Win = 6,
 }
 
-const strToChoice = (s: schema) => {
+const strToChoice = (s: inputSchema) => {
   if (s === "A" || s === "X") return Choice.Rock;
   if (s === "B" || s === "Y") return Choice.Paper;
   return Choice.Scissors;
 };
 
-const game = (p: Choice, t: Choice): Points => {
-  if (p === t) return Points.Draw;
+const strToOutcome = (s: outcomesSchema) => {
+  if (s === "X") return Outcome.Lose;
+  if (s === "Y") return Outcome.Draw;
+  return Outcome.Win;
+};
 
-  if (p === Choice.Rock && t === Choice.Scissors) return Points.Lost;
-  if (p === Choice.Paper && t === Choice.Rock) return Points.Lost;
-  if (p === Choice.Scissors && t === Choice.Paper) return Points.Lost;
+const choiceFromOutcome = (p: Choice, o: Outcome) => {
+  if (o === Outcome.Draw) return p;
 
-  return Points.Won;
+  if (p === Choice.Rock) {
+    if (o === Outcome.Win) return Choice.Paper;
+    if (o === Outcome.Lose) return Choice.Scissors;
+  }
+
+  if (p === Choice.Paper) {
+    if (o === Outcome.Win) return Choice.Scissors;
+    if (o === Outcome.Lose) return Choice.Rock;
+  }
+
+  if (p === Choice.Scissors) {
+    if (o === Outcome.Win) return Choice.Rock;
+    if (o === Outcome.Lose) return Choice.Paper;
+  }
+
+  return undefined;
+};
+
+const playRound = (p: Choice, t: Choice): Outcome => {
+  if (p === t) return Outcome.Draw;
+
+  if (p === Choice.Rock && t === Choice.Scissors) return Outcome.Lose;
+  if (p === Choice.Paper && t === Choice.Rock) return Outcome.Lose;
+  if (p === Choice.Scissors && t === Choice.Paper) return Outcome.Lose;
+
+  return Outcome.Win;
 };
 
 export const partOne = (input: string) => {
-  const roundTotals = input.trimEnd()
+  const roundTotals = input
+    .trimEnd()
     .split("\n")
     .map((round) => {
-      const [p, t] = round.split(" ").map((o) => {
-        const v = schema.parse(o);
-        return strToChoice(v);
+      const [p, t] = round.split(" ").map((el) => {
+        const validInput = inputSchema.parse(el);
+        return strToChoice(validInput);
       });
 
       if (p === undefined || t === undefined) {
         throw new Error("Something went wrong");
       }
 
-      const res = game(p, t);
+      const res = playRound(p, t);
       return res + t;
     });
 
@@ -54,8 +91,25 @@ export const partOne = (input: string) => {
 };
 
 export const partTwo = (input: string) => {
-  return 0;
+  const roundTotals = input
+    .trimEnd()
+    .split("\n")
+    .map((round) => {
+      const [opponentChoice, desiredOutcome] = round.split(" ");
+      const validChoice = choicesSchema.parse(opponentChoice);
+      const validOutcome = outcomesSchema.parse(desiredOutcome);
+      const p = strToChoice(validChoice);
+      const o = strToOutcome(validOutcome);
+      const t = choiceFromOutcome(p, o);
+
+      if (t === undefined) throw new Error("Something went wrong");
+
+      const res = playRound(p, t);
+      return res + t;
+    });
+
+  return roundTotals.reduce((a, b) => a + b, 0);
 };
 
 console.log("part one", partOne(input));
-// console.log("part two", partTwo(input));
+console.log("part two", partTwo(input));
