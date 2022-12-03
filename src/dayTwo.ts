@@ -14,6 +14,12 @@ type choicesSchema = z.infer<typeof choicesSchema>;
 const outcomesSchema = z.enum(outcomes);
 type outcomesSchema = z.infer<typeof outcomesSchema>;
 
+// const choice = {
+//   rock: 1,
+//   paper: 2,
+//   scissors: 3
+// }
+
 const enum Choice {
   Rock = 1,
   Paper,
@@ -83,8 +89,8 @@ export const partOne = (input: string) => {
         throw new Error("Something went wrong");
       }
 
-      const res = playRound(p, t);
-      return res + t;
+      const o = playRound(p, t);
+      return o + t;
     });
 
   return roundTotals.reduce((a, b) => a + b, 0);
@@ -98,14 +104,14 @@ export const partTwo = (input: string) => {
       const [opponentChoice, desiredOutcome] = round.split(" ");
       const validChoice = choicesSchema.parse(opponentChoice);
       const validOutcome = outcomesSchema.parse(desiredOutcome);
+
       const p = strToChoice(validChoice);
       const o = strToOutcome(validOutcome);
       const t = choiceFromOutcome(p, o);
 
       if (t === undefined) throw new Error("Something went wrong");
 
-      const res = playRound(p, t);
-      return res + t;
+      return o + t;
     });
 
   return roundTotals.reduce((a, b) => a + b, 0);
