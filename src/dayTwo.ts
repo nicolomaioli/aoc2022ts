@@ -1,4 +1,4 @@
-import { z } from "https://deno.land/x/zod@v3.19.1/mod.ts";
+import { z } from "../deps.ts";
 
 const input = await Deno.readTextFile("./data/dayTwo.txt");
 

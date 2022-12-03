@@ -1,5 +1,5 @@
 import { partOne, partTwo } from "./dayOne.ts";
-import { assertEquals } from "https://deno.land/std@0.167.0/testing/asserts.ts";
+import { assertEquals } from "../deps.ts";
 
 const input = `1000
 2000
