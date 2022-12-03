@@ -14,12 +14,6 @@ type choicesSchema = z.infer<typeof choicesSchema>;
 const outcomesSchema = z.enum(outcomes);
 type outcomesSchema = z.infer<typeof outcomesSchema>;
 
-// const choice = {
-//   rock: 1,
-//   paper: 2,
-//   scissors: 3
-// }
-
 const enum Choice {
   Rock = 1,
   Paper,
