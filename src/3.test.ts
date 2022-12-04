@@ -10,29 +10,29 @@ CrZsJsPPZsGzwwsLwLmpwMDw`;
 
 Deno.test("Calculates correct priority", () => {
   const items: Array<{
-    input: string;
+    in: string;
     expected: number;
   }> = [
     {
-      input: "a",
+      in: "a",
       expected: 1,
     },
     {
-      input: "z",
+      in: "z",
       expected: 26,
     },
     {
-      input: "A",
+      in: "A",
       expected: 27,
     },
     {
-      input: "Z",
+      in: "Z",
       expected: 52,
     },
   ];
 
   items.forEach((item) => {
-    const got = calculatePriority(item.input);
+    const got = calculatePriority(item.in);
     assertEquals(got, item.expected);
   });
 });
