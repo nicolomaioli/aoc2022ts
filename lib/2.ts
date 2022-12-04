@@ -108,7 +108,3 @@ export const partTwo = (input: string) => {
 
   return roundTotals.reduce((a, b) => a + b, 0);
 };
-
-const input = await Deno.readTextFile("./data/2.txt");
-console.log("part one", partOne(input));
-console.log("part two", partTwo(input));

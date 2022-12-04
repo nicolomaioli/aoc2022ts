@@ -19,7 +19,3 @@ export const partTwo = (input: string) => {
     .slice(0, 3)
     .reduce((a, b) => a + b, 0);
 };
-
-const input = await Deno.readTextFile("./data/1.txt");
-console.log("part one", partOne(input));
-console.log("part two", partTwo(input));

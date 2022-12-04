@@ -101,7 +101,3 @@ export const partTwo = (input: string) => {
 
   return 0;
 };
-
-const input = await Deno.readTextFile("./data/3.txt");
-console.log("part one", partOne(input));
-console.log("part two", partTwo(input));
