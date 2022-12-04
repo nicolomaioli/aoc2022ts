@@ -10,6 +10,7 @@ import {
 } from "./lib/4.ts";
 
 const inputOne = await Deno.readTextFile("./data/1.txt");
+console.log("=========================================");
 console.log("1.1", dayOnePartOne(inputOne));
 console.log("1.2", dayOnePartTwo(inputOne));
 
