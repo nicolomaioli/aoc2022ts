@@ -1,4 +1,4 @@
-const inputToStruct = (input: string) => {
+const sortInput = (input: string) => {
   return input
     .trimEnd()
     .split("\n")
@@ -26,7 +26,7 @@ const inputToStruct = (input: string) => {
 };
 
 export const partOne = (input: string) => {
-  return inputToStruct(input)
+  return sortInput(input)
     .map((pair) => {
       // We can now check if the right range contains the left one by comparing
       // the left-most elements
@@ -40,7 +40,7 @@ export const partOne = (input: string) => {
 };
 
 export const partTwo = (input: string) => {
-  return inputToStruct(input)
+  return sortInput(input)
     .map((pair) => {
       // We can now check if the ranges overlap by comparing the right boudary
       // of the left range with the left boundary of the right range
