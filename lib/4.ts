@@ -10,16 +10,13 @@ const sortInput = (input: string) => {
     .map((pair) => {
       // Sort pairs so that the widest range is right
       pair.sort((a, b) => {
-        const rightA = a[1];
-        const rightB = b[1];
-
-        if (rightA === rightB) {
-          // if the right boudaries are the same, we need to sort left
-          return b[0] - a[0];
+        if (a[1] !== b[1]) {
+          // Sort right if upper boundaries aren't the same
+          return a[1] - b[1];
         }
 
-        // otherwise we sort right
-        return a[1] - b[1];
+        // otherwise sort left
+        return b[0] - a[0];
       });
       return pair;
     });
