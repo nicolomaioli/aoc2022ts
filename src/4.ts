@@ -52,6 +52,6 @@ export const partTwo = (input: string) => {
     }).reduce((a, b) => a + b, 0);
 };
 
-const input = await Deno.readTextFile("./data/dayFour.txt");
+const input = await Deno.readTextFile("./data/4.txt");
 console.log("part one", partOne(input));
 console.log("part two", partTwo(input));

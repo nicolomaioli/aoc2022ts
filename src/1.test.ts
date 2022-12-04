@@ -1,4 +1,4 @@
-import { partOne, partTwo } from "./dayOne.ts";
+import { partOne, partTwo } from "./1.ts";
 import { assertEquals } from "../deps.ts";
 
 const input = `1000

@@ -1,4 +1,4 @@
-import { calculatePriority, partOne, partTwo } from "./dayThree.ts";
+import { calculatePriority, partOne, partTwo } from "./3.ts";
 import { assertEquals } from "../deps.ts";
 
 const testInput = `vJrwpWtwJgWrhcsFMMfFFhFp

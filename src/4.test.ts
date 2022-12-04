@@ -1,4 +1,4 @@
-import { partOne, partTwo } from "./dayFour.ts";
+import { partOne, partTwo } from "./4.ts";
 import { assertEquals } from "../deps.ts";
 
 const testInput = `2-4,6-8

@@ -1,4 +1,4 @@
-import { partOne, partTwo } from "./dayTwo.ts";
+import { partOne, partTwo } from "./2.ts";
 import { assertEquals } from "../deps.ts";
 
 const input = `A Y

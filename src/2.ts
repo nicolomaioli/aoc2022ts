@@ -1,7 +1,5 @@
 import { z } from "../deps.ts";
 
-const input = await Deno.readTextFile("./data/dayTwo.txt");
-
 const choices = ["A", "B", "C"] as const;
 const outcomes = ["X", "Y", "Z"] as const;
 
@@ -111,5 +109,6 @@ export const partTwo = (input: string) => {
   return roundTotals.reduce((a, b) => a + b, 0);
 };
 
+const input = await Deno.readTextFile("./data/2.txt");
 console.log("part one", partOne(input));
 console.log("part two", partTwo(input));
