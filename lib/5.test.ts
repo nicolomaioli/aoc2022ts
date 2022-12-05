@@ -1,4 +1,4 @@
-import { crateParser, instructionParser, partOne } from "./5.ts";
+import { crateParser, instructionParser, partOne, partTwo } from "./5.ts";
 import { assertEquals } from "../deps.ts";
 
 const testInput = `    [D]    
@@ -18,6 +18,23 @@ Deno.test("crate parser", () => {
     ["N", "Z"],
     ["D", "C", "M"],
     ["P"],
+  ]);
+});
+
+Deno.test("crate parser edge case", () => {
+  // for some reason P and J end up on the wrong stack
+  const edgeCase = `[T]     [P]     [J]
+[F] [S] [T]     [R]
+ 1   2   3   4   5
+`;
+
+  const parsed = crateParser(edgeCase.trimEnd());
+  assertEquals(parsed, [
+    ["T", "F"],
+    ["S"],
+    ["P", "T"],
+    [],
+    ["J", "R"],
   ]);
 });
 
@@ -48,6 +65,11 @@ Deno.test("instruction parser", () => {
 });
 
 Deno.test("day five part one", () => {
-  const got = partOne(testInput);
+  const got = partOne(testInput.trimEnd());
   assertEquals(got, "CMZ");
+});
+
+Deno.test("day five part two", () => {
+  const got = partTwo(testInput.trimEnd());
+  assertEquals(got, "MCD");
 });

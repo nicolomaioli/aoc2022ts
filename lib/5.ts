@@ -1,5 +1,6 @@
 const enum Tokens {
   left = "[",
+  right = "]",
   skip = "   ",
   ws = " ",
   eol = "\n",
@@ -21,41 +22,79 @@ export const crateParser = (input: string): CrateStack => {
   const len = Math.ceil(input.split("\n")[0].length / 4);
   const crateStack: CrateStack = Array.from({ length: len }, () => []);
 
-  let i = 0; // index in input
-  let j = 0; // index of stack
-  let tkn = input[i]; // init token
-  const skipTknLen = Tokens.skip.length; // I know but this magic number f'd me
+  let i = 0; // index of char
+  let j = 0; // index of parsed
+  let c = input[i]; // init cursor
+  const parsed: Array<Tokens> = [];
 
   // parse until we get to the numbers
-  while (/\D/.test(tkn)) {
-    if (tkn === Tokens.ws) {
-      // look ahead for Tokens.skip
-      if (input.slice(i, i + skipTknLen) === Tokens.skip) {
-        j++; // move over to next stack
-        i = i + skipTknLen; // step over Tokens.skip
-        tkn = input[i];
+  while (/\D/.test(c)) {
+    // remember to push into stack
+    if (c === Tokens.ws) {
+      if (parsed.length === 0) {
+        // edge case: sequence can't begin with Tokens.ws, so it's Tokens.skip
+        parsed.push(Tokens.skip);
+        j++;
+        i = i + Tokens.skip.length;
+        c = input[i];
+        continue;
+      } else if (parsed.at(-1) === Tokens.eol) {
+        // if line begins with eol, it's either a Tokens.skip or a number
+
+        // if lookahead is number, we are done
+        if (/\d/.test(input[i + 1])) {
+          i++;
+          c = input[i];
+          continue;
+        }
+
+        // otherwise is Tokens.skip
+        parsed.push(Tokens.skip);
+        j++;
+        i = i + Tokens.skip.length;
+        c = input[i];
+        continue;
+      } else if (parsed.at(-1) === Tokens.ws) {
+        // only case for two consecutive Tokens.ws is Tokens.skip
+        parsed.push(Tokens.skip);
+        j++;
+        i = i + Tokens.skip.length;
+        c = input[i];
         continue;
       } else {
-        // it's a separator so we can move on
+        // it's a separator, move on
+        parsed.push(c);
         i++;
-        tkn = input[i];
+        c = input[i];
         continue;
       }
-    } else if (tkn === Tokens.left) {
-      // parse push crate and move on until Tokens.right
-      i++;
-      tkn = input[i]; // crate is the following token
-      crateStack[j].push(tkn); // push token
-      j++; // move to next stack
-      i = i + 2; // step over ']'
-      tkn = input[i];
+    } else if (c === Tokens.left) {
+      parsed.push(c);
+      i++; // move to crate
+      c = input[i];
+      crateStack[j].push(c);
+      j++;
+      i++; // move to next token (will be Tokens.right)
+      c = input[i];
       continue;
-    } else if (tkn === Tokens.eol) {
-      // reset stack
+    } else if (c === Tokens.right) {
+      parsed.push(c);
+      i++;
+      c = input[i];
+      continue;
+    } else if (c === Tokens.eol) {
+      parsed.push(c);
       j = 0;
       i++;
-      tkn = input[i];
+      c = input[i];
       continue;
+    } else {
+      // something went terribly wrong
+      console.error("input", input);
+      console.error("parsed", parsed);
+      console.error("c", c);
+      console.error("i", i);
+      throw new Error("crateParserError: something went wrong");
     }
   }
 
@@ -73,8 +112,10 @@ export const instructionParser = (input: string): Instructions => {
       const match = line.match(rg);
 
       if (!match) {
+        console.error("line", line);
         throw new Error("InstructionParserError null match");
       } else if (match.length < 4) {
+        console.error("match", match);
         throw new Error("InstructionParserError not enough matches");
       }
 
@@ -94,10 +135,44 @@ export const instructionParser = (input: string): Instructions => {
     });
 };
 
-export const partOne = (_input: string) => {
-  return "";
+const parseInput = (input: string) => {
+  const [cratesIn, instructionsIn] = input.trimEnd().split("\n\n");
+  const crateStack = crateParser(cratesIn);
+  const instructions = instructionParser(instructionsIn);
+
+  return {
+    crateStack,
+    instructions,
+  };
 };
 
-export const partTwo = (_input: string) => {
-  return "";
+export const partOne = (input: string) => {
+  const { crateStack, instructions } = parseInput(input);
+
+  instructions.forEach((instruction) => {
+    const { amount, from, to } = instruction;
+
+    for (let i = 0; i < amount; i++) {
+      const crate = crateStack[from - 1].shift() as string;
+      crateStack[to - 1].unshift(crate);
+    }
+  });
+
+  return crateStack.map((stack) => {
+    return stack.shift();
+  }).join("");
+};
+
+export const partTwo = (input: string) => {
+  const { crateStack, instructions } = parseInput(input);
+
+  instructions.forEach((instruction) => {
+    const { amount, from, to } = instruction;
+    const crates = crateStack[from - 1].splice(0, amount);
+    crateStack[to - 1].splice(0, 0, ...crates);
+  });
+
+  return crateStack.map((stack) => {
+    return stack.shift();
+  }).join("");
 };
