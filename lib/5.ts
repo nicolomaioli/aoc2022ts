@@ -23,20 +23,20 @@ export const crateParser = (input: string): CrateStack => {
   const crateStack: CrateStack = Array.from({ length: len }, () => []);
 
   let i = 0; // index of char
-  let j = 0; // index of parsed
-  let c = input[i]; // init cursor
+  let j = 0; // index of stack
+  let cur = input[i]; // init cursor
   const parsed: Array<Tokens> = [];
 
   // parse until we get to the numbers
-  while (/\D/.test(c)) {
+  while (/\D/.test(cur)) {
     // remember to push into stack
-    if (c === Tokens.ws) {
+    if (cur === Tokens.ws) {
       if (parsed.length === 0) {
         // edge case: sequence can't begin with Tokens.ws, so it's Tokens.skip
         parsed.push(Tokens.skip);
         j++;
         i = i + Tokens.skip.length;
-        c = input[i];
+        cur = input[i];
         continue;
       } else if (parsed.at(-1) === Tokens.eol) {
         // if line begins with eol, it's either a Tokens.skip or a number
@@ -44,7 +44,7 @@ export const crateParser = (input: string): CrateStack => {
         // if lookahead is number, we are done
         if (/\d/.test(input[i + 1])) {
           i++;
-          c = input[i];
+          cur = input[i];
           continue;
         }
 
@@ -52,47 +52,47 @@ export const crateParser = (input: string): CrateStack => {
         parsed.push(Tokens.skip);
         j++;
         i = i + Tokens.skip.length;
-        c = input[i];
+        cur = input[i];
         continue;
       } else if (parsed.at(-1) === Tokens.ws) {
         // only case for two consecutive Tokens.ws is Tokens.skip
         parsed.push(Tokens.skip);
         j++;
         i = i + Tokens.skip.length;
-        c = input[i];
+        cur = input[i];
         continue;
       } else {
         // it's a separator, move on
-        parsed.push(c);
+        parsed.push(cur);
         i++;
-        c = input[i];
+        cur = input[i];
         continue;
       }
-    } else if (c === Tokens.left) {
-      parsed.push(c);
+    } else if (cur === Tokens.left) {
+      parsed.push(cur);
       i++; // move to crate
-      c = input[i];
-      crateStack[j].push(c);
+      cur = input[i];
+      crateStack[j].push(cur);
       j++;
       i++; // move to next token (will be Tokens.right)
-      c = input[i];
+      cur = input[i];
       continue;
-    } else if (c === Tokens.right) {
-      parsed.push(c);
+    } else if (cur === Tokens.right) {
+      parsed.push(cur);
       i++;
-      c = input[i];
+      cur = input[i];
       continue;
-    } else if (c === Tokens.eol) {
-      parsed.push(c);
+    } else if (cur === Tokens.eol) {
+      parsed.push(cur);
       j = 0;
       i++;
-      c = input[i];
+      cur = input[i];
       continue;
     } else {
       // something went terribly wrong
       console.error("input", input);
       console.error("parsed", parsed);
-      console.error("c", c);
+      console.error("c", cur);
       console.error("i", i);
       throw new Error("crateParserError: something went wrong");
     }
