@@ -29,7 +29,6 @@ export const crateParser = (input: string): CrateStack => {
 
   // parse until we get to the numbers
   while (/\D/.test(cur)) {
-    // remember to push into stack
     if (cur === Tokens.ws) {
       if (parsed.length === 0) {
         // edge case: sequence can't begin with Tokens.ws, so it's Tokens.skip
@@ -39,7 +38,8 @@ export const crateParser = (input: string): CrateStack => {
         cur = input[i];
         continue;
       } else if (parsed.at(-1) === Tokens.eol) {
-        // if line begins with eol, it's either a Tokens.skip or a number
+        // if line begins with ws and not followed by a number, it's
+        // Tokens.skip
 
         // if lookahead is number, we are done
         if (/\d/.test(input[i + 1])) {
