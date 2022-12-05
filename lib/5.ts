@@ -1,6 +1,5 @@
 const enum Tokens {
   left = "[",
-  right = "]",
   skip = "   ",
   ws = " ",
   eol = "\n",
@@ -8,6 +7,14 @@ const enum Tokens {
 
 type Stack = Array<string>;
 type CrateStack = Array<Stack>;
+
+type Instruction = {
+  amount: number;
+  from: number;
+  to: number;
+};
+
+type Instructions = Array<Instruction>;
 
 export const crateParser = (input: string): CrateStack => {
   // init crateStack
@@ -34,9 +41,13 @@ export const crateParser = (input: string): CrateStack => {
         tkn = input[i];
         continue;
       }
-    } else if (tkn === Tokens.left || tkn === Tokens.right) {
-      // again we can move on
+    } else if (tkn === Tokens.left) {
+      // parse push crate and move on until Tokens.right
       i++;
+      tkn = input[i]; // crate is the following token
+      crateStack[j].push(tkn); // push token
+      j++; // move to next stack
+      i = i + 2; // step over ']'
       tkn = input[i];
       continue;
     } else if (tkn === Tokens.eol) {
@@ -45,25 +56,48 @@ export const crateParser = (input: string): CrateStack => {
       i++;
       tkn = input[i];
       continue;
-    } else {
-      crateStack[j].push(tkn);
-      j++;
-      i++;
-      tkn = input[i];
     }
   }
 
   return crateStack;
 };
 
-export const instructionParser = (_input: string) => {
-  return [];
+export const instructionParser = (input: string): Instructions => {
+  // assume input contains only instructions, example:
+  // move 10 from 7 to 2
+
+  return input
+    .split("\n")
+    .map((line) => {
+      const rg = /(\d+).+(\d+).+(\d+)/;
+      const match = line.match(rg);
+
+      if (!match) {
+        throw new Error("InstructionParserError null match");
+      } else if (match.length < 4) {
+        throw new Error("InstructionParserError not enough matches");
+      }
+
+      const groups = match
+        .slice(1)
+        .map((n) => Number(n))
+        .filter((n): n is number => {
+          // Typeguard: filter out undefined
+          return !!n;
+        });
+
+      return {
+        amount: groups[0],
+        from: groups[1],
+        to: groups[2],
+      };
+    });
 };
 
 export const partOne = (_input: string) => {
-  return 0;
+  return "";
 };
 
 export const partTwo = (_input: string) => {
-  return 0;
+  return "";
 };
