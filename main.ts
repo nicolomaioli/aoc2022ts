@@ -12,6 +12,7 @@ import {
   partOne as dayFivePartOne,
   partTwo as dayFivePartTwo,
 } from "./lib/5.ts";
+import { partOne as daySixPartOne, partTwo as daySixPartTwo } from "./lib/6.ts";
 
 const inputOne = await Deno.readTextFile("./data/1.txt");
 console.log("=========================================");
@@ -37,3 +38,8 @@ const inputFive = await Deno.readTextFile("./data/5.txt");
 console.log("=========================================");
 console.log("5.1", dayFivePartOne(inputFive));
 console.log("5.2", dayFivePartTwo(inputFive));
+
+const inputSix = await Deno.readTextFile("./data/6.txt");
+console.log("=========================================");
+console.log("6.1", daySixPartOne(inputSix));
+console.log("6.2", daySixPartTwo(inputSix));
