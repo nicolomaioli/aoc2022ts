@@ -13,6 +13,10 @@ import {
   partTwo as dayFivePartTwo,
 } from "./lib/5.ts";
 import { partOne as daySixPartOne, partTwo as daySixPartTwo } from "./lib/6.ts";
+import {
+  partOne as daySevenPartOne,
+  partTwo as daySevenPartTwo,
+} from "./lib/7.ts";
 
 const inputOne = await Deno.readTextFile("./data/1.txt");
 console.log("=========================================");
@@ -43,3 +47,8 @@ const inputSix = await Deno.readTextFile("./data/6.txt");
 console.log("=========================================");
 console.log("6.1", daySixPartOne(inputSix));
 console.log("6.2", daySixPartTwo(inputSix));
+
+const inputSeven = await Deno.readTextFile("./data/7.txt");
+console.log("=========================================");
+console.log("7.1", daySevenPartOne(inputSeven));
+console.log("7.2", daySevenPartTwo(inputSeven));
