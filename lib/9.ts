@@ -53,6 +53,7 @@ const processStep = (
   const tail = newPoints.at(-1);
   if (tail) {
     const found = locations.find((point) =>
+      // c for coordinate
       point.every((c, i) => tail[i] === c)
     );
 
