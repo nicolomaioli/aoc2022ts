@@ -38,27 +38,45 @@ const moveTail = (t: Point, h: Point) => {
 
 const processMove = (
   move: Move,
-  h: Point,
-  t: Point,
-  l: Array<Point>,
+  points: Array<Point>,
+  locations: Array<Point>,
 ) => {
   let steps = move.n;
 
   while (steps > 0) {
-    h = movePoint(h, move.d);
-    t = moveTail(t, h);
+    // for simplicity [head, tail1, ..., tailn]
+    points = points.map((p, i) => {
+      let newPoint: Point = [...p];
 
-    // new position to visited if we haven't been here before
-    const found = l.find((loc) => loc.every((e, i) => t[i] === e));
+      if (i === 0) {
+        // this is the head
+        newPoint = movePoint(p, move.d);
+      } else {
+        newPoint = moveTail(p, points[i - 1]);
+      }
 
-    if (!found) {
-      l.push([...t]);
-    }
+      if (i === points.length - 1) {
+        // tail is the very last point
+        // record new position to visited if we haven't been here before
+        const found = locations.find((loc) =>
+          loc.every((e, i) => newPoint[i] === e)
+        );
+
+        if (!found) {
+          locations.push([...newPoint]);
+        }
+      }
+
+      return newPoint;
+    });
 
     steps--;
   }
 
-  return { h, t, l };
+  return {
+    points,
+    locations,
+  };
 };
 
 const parse = (input: string) => {
@@ -82,23 +100,29 @@ const parse = (input: string) => {
 };
 
 export const partOne = (input: string) => {
-  let head: Point = [0, 0];
-  let tail: Point = [0, 0];
-
-  // we want copies not references here
-  let locations: Array<Point> = [[...tail]];
+  let points: Array<Point> = Array.from({ length: 2 }, () => [0, 0]);
+  let locations: Array<Point> = [[0, 0]];
 
   parse(input)
     .forEach((move) => {
-      const res = processMove(move, head, tail, locations);
-      head = res.h;
-      tail = res.t;
-      locations = res.l;
+      const res = processMove(move, points, locations);
+      points = res.points;
+      locations = res.locations;
     });
 
   return locations.length;
 };
 
-export const partTwo = (_input: string) => {
-  return 0;
+export const partTwo = (input: string) => {
+  let points: Array<Point> = Array.from({ length: 10 }, () => [0, 0]);
+  let locations: Array<Point> = [[0, 0]];
+
+  parse(input)
+    .forEach((move) => {
+      const res = processMove(move, points, locations);
+      points = res.points;
+      locations = res.locations;
+    });
+
+  return locations.length;
 };
