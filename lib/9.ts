@@ -1,9 +1,5 @@
 type Point = [number, number];
 type Direction = "U" | "D" | "L" | "R";
-type Move = {
-  d: Direction;
-  n: number;
-};
 
 const movePoint = (p: Point, d: Direction) => {
   switch (d) {
@@ -36,47 +32,42 @@ const moveTail = (t: Point, h: Point) => {
   return t;
 };
 
-const processMove = (
-  move: Move,
+const processStep = (
+  direction: Direction,
   points: Array<Point>,
   locations: Array<Point>,
 ) => {
-  let steps = move.n;
+  const newPoints = points.reduce<Array<Point>>((acc, p, i) => {
+    // we need to check if it's the head first, cause it moves different
+    // also assume points = [head, tail1, ..., tailn]
+    const newPoint: Point = (i === 0)
+      ? movePoint(p, direction)
+      : moveTail(p, points[i - 1]);
 
-  while (steps > 0) {
-    // for simplicity [head, tail1, ..., tailn]
-    points = points.map((p, i) => {
-      let newPoint: Point = [...p];
+    acc.push(newPoint);
+    return acc;
+  }, []);
 
-      if (i === 0) {
-        // this is the head
-        newPoint = movePoint(p, move.d);
-      } else {
-        newPoint = moveTail(p, points[i - 1]);
-      }
+  // tail is the very last point
+  // record new position to visited if we haven't been here before
+  const tail = newPoints.at(-1);
+  if (tail) {
+    const found = locations.find((point) =>
+      point.every((c, i) => tail[i] === c)
+    );
 
-      if (i === points.length - 1) {
-        // tail is the very last point
-        // record new position to visited if we haven't been here before
-        const found = locations.find((loc) =>
-          loc.every((e, i) => newPoint[i] === e)
-        );
+    if (!found) {
+      // destructuring here is deliberate
+      locations.push([...tail]);
+    }
 
-        if (!found) {
-          locations.push([...newPoint]);
-        }
-      }
-
-      return newPoint;
-    });
-
-    steps--;
+    return {
+      newPoints,
+      newLocations: locations,
+    };
   }
 
-  return {
-    points,
-    locations,
-  };
+  throw new Error("Tail gone missing send help");
 };
 
 const parse = (input: string) => {
@@ -90,7 +81,7 @@ const parse = (input: string) => {
         const [_, d, n] = match;
 
         return {
-          d: d as Direction,
+          d: d as Direction, // why can't you infer from match ts :(
           n: Number(n),
         };
       }
@@ -99,30 +90,35 @@ const parse = (input: string) => {
     });
 };
 
-export const partOne = (input: string) => {
-  let points: Array<Point> = Array.from({ length: 2 }, () => [0, 0]);
+const rope = (input: string, len: number) => {
+  let points: Array<Point> = Array.from({ length: len }, () => [0, 0]);
   let locations: Array<Point> = [[0, 0]];
 
   parse(input)
     .forEach((move) => {
-      const res = processMove(move, points, locations);
-      points = res.points;
-      locations = res.locations;
+      let steps = move.n;
+
+      while (steps > 0) {
+        const { newPoints, newLocations } = processStep(
+          move.d,
+          points,
+          locations,
+        );
+
+        // reassigning like this feels like a code smell
+        points = newPoints;
+        locations = newLocations;
+        steps--;
+      }
     });
 
   return locations.length;
 };
 
+export const partOne = (input: string) => {
+  return rope(input, 2);
+};
+
 export const partTwo = (input: string) => {
-  let points: Array<Point> = Array.from({ length: 10 }, () => [0, 0]);
-  let locations: Array<Point> = [[0, 0]];
-
-  parse(input)
-    .forEach((move) => {
-      const res = processMove(move, points, locations);
-      points = res.points;
-      locations = res.locations;
-    });
-
-  return locations.length;
+  return rope(input, 10);
 };
