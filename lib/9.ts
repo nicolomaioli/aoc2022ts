@@ -1,11 +1,68 @@
-export const partOne = (input: string) => {
-  const head = [0, 0];
-  const tail = [0, 0];
+type Point = [number, number];
+type Direction = "U" | "D" | "L" | "R";
+type Move = {
+  d: Direction;
+  n: number;
+};
 
-  // we want copies not references here
-  const locations = [[...tail]];
+const movePoint = (p: Point, d: Direction) => {
+  switch (d) {
+    case "U":
+      p[1] += 1;
+      break;
+    case "D":
+      p[1] -= 1;
+      break;
+    case "L":
+      p[0] -= 1;
+      break;
+    case "R":
+      p[0] += 1;
+      break;
+  }
 
-  input
+  return p;
+};
+
+const moveTail = (t: Point, h: Point) => {
+  const dx = h[0] - t[0];
+  const dy = h[1] - t[1];
+
+  if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+    t[0] += Math.sign(dx);
+    t[1] += Math.sign(dy);
+  }
+
+  return t;
+};
+
+const processMove = (
+  move: Move,
+  h: Point,
+  t: Point,
+  l: Array<Point>,
+) => {
+  let steps = move.n;
+
+  while (steps > 0) {
+    h = movePoint(h, move.d);
+    t = moveTail(t, h);
+
+    // new position to visited if we haven't been here before
+    const found = l.find((loc) => loc.every((e, i) => t[i] === e));
+
+    if (!found) {
+      l.push([...t]);
+    }
+
+    steps--;
+  }
+
+  return { h, t, l };
+};
+
+const parse = (input: string) => {
+  return input
     .trimEnd()
     .split("\n")
     .map((line) => {
@@ -15,73 +72,28 @@ export const partOne = (input: string) => {
         const [_, d, n] = match;
 
         return {
-          d: d,
+          d: d as Direction,
           n: Number(n),
         };
       }
 
       throw new Error(`Failed to parse ${line}`);
-    }).forEach((move) => {
-      let steps = move.n;
+    });
+};
 
-      while (steps > 0) {
-        switch (move.d) {
-          case "U":
-            head[1] += 1;
-            break;
-          case "D":
-            head[1] -= 1;
-            break;
-          case "L":
-            head[0] -= 1;
-            break;
-          case "R":
-            head[0] += 1;
-            break;
-          default:
-            throw new Error(`Invalid move ${move}`);
-        }
+export const partOne = (input: string) => {
+  let head: Point = [0, 0];
+  let tail: Point = [0, 0];
 
-        const dx = head[0] - tail[0];
-        const dy = head[1] - tail[1];
+  // we want copies not references here
+  let locations: Array<Point> = [[...tail]];
 
-        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-          if (tail[0] === head[0] || tail[1] === head[1]) {
-            switch (move.d) {
-              case "U":
-                tail[1] += 1;
-                break;
-              case "D":
-                tail[1] -= 1;
-                break;
-              case "L":
-                tail[0] -= 1;
-                break;
-              case "R":
-                tail[0] += 1;
-                break;
-              default:
-                throw new Error(`Invalid move ${move}`);
-            }
-          } else {
-            // if the head and tail aren't touching and aren't in the same row or
-            // column, the tail always moves one step diagonally to keep up
-            tail[0] += Math.sign(dx);
-            tail[1] += Math.sign(dy);
-          }
-        }
-
-        // new position to visited if we haven't been here before
-        const found = locations.find((loc) =>
-          loc.every((e, i) => tail[i] === e)
-        );
-
-        if (!found) {
-          locations.push([...tail]);
-        }
-
-        steps--;
-      }
+  parse(input)
+    .forEach((move) => {
+      const res = processMove(move, head, tail, locations);
+      head = res.h;
+      tail = res.t;
+      locations = res.l;
     });
 
   return locations.length;
