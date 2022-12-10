@@ -1,7 +1,7 @@
 export const parse = (input: string) => {
   let x = 1;
-  // initialise cycles to sync cycle with cycles index
-  const cycles: Array<number> = [x];
+  // offset to sync with cycles (start at 1)
+  const cycles: Array<number> = [1];
 
   input
     .trimEnd()
@@ -52,6 +52,27 @@ export const partOne = (input: string) => {
   return reduced;
 };
 
-export const partTwo = (_input: string) => {
-  return 0;
+export const partTwo = (input: string) => {
+  const cycles = parse(input);
+  const width = 40;
+
+  // remove offset
+  cycles.pop();
+
+  const crt = cycles.map((x, i) => {
+    let pixel = ".";
+    const j = i % width;
+    if (x - 1 <= j && j <= x + 1) {
+      pixel = "#";
+    }
+
+    if ((i + 1) % width === 0) {
+      pixel += "\n";
+    }
+
+    return pixel;
+  }).join("");
+
+  console.log("crt\n", crt);
+  return crt;
 };
