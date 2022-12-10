@@ -73,6 +73,5 @@ export const partTwo = (input: string) => {
     return pixel;
   }).join("");
 
-  console.log("crt\n", crt);
   return crt;
 };
