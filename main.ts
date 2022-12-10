@@ -7,6 +7,7 @@ import { partOne as d6p1, partTwo as d6p2 } from "./lib/6.ts";
 import { partOne as d7p1, partTwo as d7p2 } from "./lib/7.ts";
 import { partOne as d8p1, partTwo as d8p2 } from "./lib/8.ts";
 import { partOne as d9p1, partTwo as d9p2 } from "./lib/9.ts";
+import { partOne as d10p1, partTwo as d10p2 } from "./lib/10.ts";
 
 const in1 = await Deno.readTextFile("./data/1.txt");
 console.log("=========================================");
@@ -52,3 +53,8 @@ const in9 = await Deno.readTextFile("./data/9.txt");
 console.log("=========================================");
 console.log("9.1", d9p1(in9));
 console.log("9.2", d9p2(in9));
+
+const in10 = await Deno.readTextFile("./data/10.txt");
+console.log("=========================================");
+console.log("10.1", d10p1(in10));
+console.log("10.2", d10p2(in10));
